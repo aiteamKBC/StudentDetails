@@ -1,0 +1,713 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Details</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/icon.png?v=2" />
+  <link rel="shortcut icon" href="/favicon.ico?v=2" />
+  <link rel="apple-touch-icon" href="/icon.png?v=2" />
+  <style>
+    :root {
+      --bg: #f4efe6;
+      --card: #fffdfa;
+      --accent: #0a5c36;
+      --text: #1f2937;
+      --err: #b91c1c;
+      --muted: #6b7280;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: radial-gradient(circle at 20% 20%, #e7dbc8, var(--bg));
+      color: var(--text);
+      padding: 0;
+    }
+
+    .card {
+      width: min(90%, 420px);
+      margin: 32px auto;
+      background: var(--card);
+      border: 1px solid #e5e7eb;
+      border-radius: 22px;
+      padding: 28px;
+      box-shadow: 0 18px 42px rgba(17, 24, 39, 0.1);
+    }
+
+    input:not([type="checkbox"]),
+    button,
+    select {
+      width: 100%;
+      box-sizing: border-box;
+      border-radius: 10px;
+      font-size: 1rem;
+    }
+
+    .input-label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+
+    input:not([type="checkbox"]),
+    select {
+      border: 1px solid #d1d5db;
+      padding: 14px 14px 14px 14px;
+      margin: 0;
+      background: #fff;
+    }
+
+    .email-input-wrap input {
+      padding-right: 44px;
+    }
+
+    .email-wrap {
+      margin-bottom: 14px;
+    }
+
+    .extra-fields {
+      display: grid;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .extra-fields[hidden] {
+      display: none;
+    }
+
+    .email-input-wrap {
+      position: relative;
+    }
+
+    .email-status {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.1rem;
+      color: var(--muted);
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .email-status.ok {
+      color: var(--accent);
+    }
+
+    .email-status.error {
+      color: var(--err);
+    }
+
+    button {
+      border: 0;
+      padding: 15px;
+      font-weight: 600;
+      background: var(--accent);
+      color: white;
+      cursor: pointer;
+      border-radius: 14px;
+      font-size: 1.05rem;
+    }
+
+    button:disabled {
+      opacity: .7;
+      cursor: wait;
+    }
+
+    #msg {
+      margin-top: 12px;
+      min-height: 1.2em;
+    }
+
+    .error {
+      color: var(--err);
+    }
+
+    .ok {
+      color: var(--accent);
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .current-group {
+      padding: 14px 16px;
+      border: 1px solid #d1d5db;
+      border-radius: 14px;
+      background: #f8fafc;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .current-group[hidden] {
+      display: none;
+    }
+
+    .current-group strong {
+      color: #111827;
+    }
+
+    .group-choice {
+      padding: 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 14px;
+      background: #f8fafc;
+    }
+
+    .group-choice label.inline {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 500;
+      margin: 0;
+      line-height: 1.4;
+      flex-wrap: nowrap;
+    }
+
+    .group-choice input[type="checkbox"] {
+      width: auto;
+      margin: 0;
+      flex: 0 0 auto;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      accent-color: var(--accent);
+      transform: translateY(1px);
+    }
+
+    .group-select-wrap {
+      margin-top: 12px;
+      position: relative;
+    }
+
+    .group-select-wrap[hidden] {
+      display: none;
+    }
+
+    .reason-wrap {
+      margin-top: 12px;
+    }
+
+    .reason-wrap[hidden] {
+      display: none;
+    }
+
+    .extra-email-toggle {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 500;
+      margin-top: 2px;
+      line-height: 1.4;
+      padding: 2px 0;
+      flex-wrap: nowrap;
+    }
+
+    .extra-email-toggle input[type="checkbox"] {
+      width: auto;
+      margin: 0;
+      flex: 0 0 auto;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      accent-color: var(--accent);
+      transform: translateY(1px);
+    }
+
+    .checkbox-text {
+      flex: 1 1 auto;
+      display: inline-block;
+    }
+
+    .second-email-wrap[hidden] {
+      display: none;
+    }
+
+    .group-search {
+      position: relative;
+    }
+
+    .group-search input {
+      padding-right: 40px;
+    }
+
+    .group-search::after {
+      content: "\25BE";
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      pointer-events: none;
+      font-size: 0.9rem;
+    }
+
+    .group-options {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      max-height: 180px;
+      overflow-y: auto;
+      padding: 8px;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      background: #fffdfa;
+      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.12);
+      z-index: 20;
+    }
+
+    .group-options[hidden] {
+      display: none;
+    }
+
+    .group-option {
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      line-height: 1.35;
+    }
+
+    .group-option:hover,
+    .group-option.active {
+      background: #eef6f1;
+    }
+
+    .group-empty {
+      padding: 10px 12px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 520px) {
+      /* body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 0 16px 24px;
+      } */
+
+      .card {
+        width: 80%;
+        max-width: 360px;
+        margin: 18px auto 24px;
+        padding: 22px 18px 24px;
+        border-radius: 18px;
+        box-shadow: 0 10px 28px rgba(17, 24, 39, 0.08);
+      }
+
+      .extra-fields {
+        gap: 12px;
+      }
+
+      .group-choice,
+      .current-group {
+        padding: 12px;
+      }
+
+      input,
+      select,
+      button {
+        font-size: 16px;
+        min-height: 52px;
+      }
+
+      .input-label {
+        margin-bottom: 8px;
+        font-size: 0.98rem;
+      }
+
+      .email-wrap {
+        margin-bottom: 12px;
+      }
+
+      .group-choice label.inline,
+      .extra-email-toggle {
+        gap: 9px;
+        font-size: 0.98rem;
+        align-items: center;
+      }
+
+      .group-choice input[type="checkbox"],
+      .extra-email-toggle input[type="checkbox"] {
+        margin-top: 0;
+      }
+
+      .group-options {
+        max-height: 160px;
+      }
+
+      .group-option {
+        padding: 9px 10px;
+      }
+
+      #msg {
+        min-height: 0;
+        margin-top: 10px;
+        font-size: 0.95rem;
+      }
+
+      .current-group strong {
+        display: block;
+        margin-bottom: 2px;
+      }
+
+      .group-search::after {
+        right: 12px;
+      }
+
+      button {
+        margin-top: 2px;
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+  <main class="card">
+    <form id="loginForm">
+      {% csrf_token %}
+      <div class="email-wrap">
+        <label class="input-label" for="email">Aptem Email:</label>
+        <div class="email-input-wrap">
+          <input id="email" type="email" placeholder="Enter your Aptem email" required />
+          <span id="emailStatus" class="email-status" aria-hidden="true"></span>
+        </div>
+      </div>
+      <div id="extraFields" class="extra-fields" hidden>
+        <div>
+          <label class="input-label" for="nickname">Nickname:</label>
+          <input id="nickname" type="text" placeholder="Enter your nickname" />
+        </div>
+        <div>
+          <label class="input-label" for="alternativeEmail">Alternative email:</label>
+          <input id="alternativeEmail" type="email" placeholder="Enter the alternative email address you use" />
+        </div>
+        <label class="extra-email-toggle" for="hasSecondAlternativeEmail">
+          <input id="hasSecondAlternativeEmail" type="checkbox" />
+          <span class="checkbox-text">I have a second alternative email</span>
+        </label>
+        <div id="secondEmailWrap" class="second-email-wrap" hidden>
+          <label class="input-label" for="alternativeEmail2">Second alternative email:</label>
+          <input id="alternativeEmail2" type="email" placeholder="Enter your second alternative email" />
+        </div>
+        <div id="currentGroupBox" class="current-group" hidden>
+          <strong>Your current group:</strong> <span id="studentGroup"></span>
+        </div>
+        <div class="group-choice">
+          <label class="inline" for="differentGroup">
+            <input id="differentGroup" type="checkbox" />
+            <span class="checkbox-text">I attend a different group</span>
+          </label>
+            <div id="groupSelectWrap" class="group-select-wrap" hidden>
+              <label class="input-label" for="attendanceGroup">module name:</label>
+              <div class="group-search">
+                <input id="attendanceGroup" type="text" placeholder="Type to find your Module" autocomplete="off" />
+              </div>
+              <div id="groupOptions" class="group-options" hidden></div>
+            </div>
+          <div id="reasonWrap" class="reason-wrap" hidden>
+            <label class="input-label" for="attendanceReason">Reason:</label>
+            <select id="attendanceReason">
+              <option value="">Choose a reason</option>
+              <option value="Intensive study">Intensive study - attending two groups to finish sooner</option>
+              <option value="Transferred">Transferred to this group</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <button id="submitBtn" type="submit">Submit</button>
+      <div id="msg" aria-live="polite"></div>
+    </form>
+  </main>
+
+  <script>
+    const form = document.getElementById('loginForm');
+    const emailInput = document.getElementById('email');
+    const emailStatus = document.getElementById('emailStatus');
+    const submitBtn = document.getElementById('submitBtn');
+    const msg = document.getElementById('msg');
+    const extraFields = document.getElementById('extraFields');
+    const nicknameInput = document.getElementById('nickname');
+    const alternativeEmailInput = document.getElementById('alternativeEmail');
+    const hasSecondAlternativeEmailInput = document.getElementById('hasSecondAlternativeEmail');
+    const secondEmailWrap = document.getElementById('secondEmailWrap');
+    const alternativeEmail2Input = document.getElementById('alternativeEmail2');
+    const differentGroupInput = document.getElementById('differentGroup');
+    const groupSelectWrap = document.getElementById('groupSelectWrap');
+    const attendanceGroupInput = document.getElementById('attendanceGroup');
+    const groupOptions = document.getElementById('groupOptions');
+    const reasonWrap = document.getElementById('reasonWrap');
+    const attendanceReasonSelect = document.getElementById('attendanceReason');
+    const currentGroupBox = document.getElementById('currentGroupBox');
+    const studentGroup = document.getElementById('studentGroup');
+    const csrfTokenInput = document.querySelector('input[name="csrfmiddlewaretoken"]');
+    let allGroupOptions = [];
+
+    function setMessage(text, type) {
+      msg.textContent = text;
+      msg.className = type;
+    }
+
+    function setStatus(symbol, type) {
+      emailStatus.textContent = symbol;
+      emailStatus.className = `email-status ${type}`;
+    }
+
+    function clearStudentInfo() {
+      studentGroup.textContent = '';
+      currentGroupBox.hidden = true;
+    }
+
+    function resetGroupChoice() {
+      differentGroupInput.checked = false;
+      groupSelectWrap.hidden = true;
+      attendanceGroupInput.required = false;
+      attendanceGroupInput.value = '';
+      attendanceReasonSelect.required = false;
+      attendanceReasonSelect.value = '';
+      reasonWrap.hidden = true;
+      allGroupOptions = [];
+      groupOptions.hidden = true;
+      groupOptions.innerHTML = '';
+    }
+
+    function resetSecondAlternativeEmail() {
+      hasSecondAlternativeEmailInput.checked = false;
+      secondEmailWrap.hidden = true;
+      alternativeEmail2Input.required = false;
+      alternativeEmail2Input.value = '';
+    }
+
+    function renderGroupOptions(filterText = '') {
+      const query = filterText.trim().toLowerCase();
+      if (!query) {
+        groupOptions.hidden = true;
+        groupOptions.innerHTML = '';
+        return;
+      }
+
+      const filteredGroups = allGroupOptions.filter((group) => group.toLowerCase().includes(query));
+      groupOptions.innerHTML = '';
+
+      if (!filteredGroups.length) {
+        const emptyState = document.createElement('div');
+        emptyState.className = 'group-empty';
+        emptyState.textContent = 'No groups found';
+        groupOptions.appendChild(emptyState);
+        groupOptions.hidden = false;
+        return;
+      }
+
+      filteredGroups.forEach((group) => {
+        const option = document.createElement('div');
+        option.className = 'group-option';
+        option.textContent = group;
+        option.addEventListener('mousedown', (event) => {
+          event.preventDefault();
+          attendanceGroupInput.value = group;
+          groupOptions.hidden = true;
+        });
+        groupOptions.appendChild(option);
+      });
+
+      groupOptions.hidden = false;
+    }
+
+    function setGroupOptions(groups) {
+      allGroupOptions = Array.isArray(groups)
+        ? [...new Set(groups.map((item) => String(item).trim()).filter(Boolean))]
+        : [];
+      attendanceGroupInput.value = '';
+      groupOptions.hidden = true;
+      groupOptions.innerHTML = '';
+    }
+
+    function toggleExtraFields(visible) {
+      extraFields.hidden = !visible;
+      nicknameInput.required = visible;
+      alternativeEmailInput.required = visible;
+      if (!visible) {
+        nicknameInput.value = '';
+        alternativeEmailInput.value = '';
+        resetSecondAlternativeEmail();
+        resetGroupChoice();
+      }
+    }
+
+    function showStudentInfo(group) {
+      const hasGroup = !!(group && String(group).trim());
+      studentGroup.textContent = hasGroup ? String(group).trim() : '-';
+      currentGroupBox.hidden = false;
+    }
+
+    function isValidAptemEmail(value) {
+      const email = value.trim();
+      if (!email) return false;
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    emailInput.addEventListener('input', () => {
+      submitBtn.disabled = false;
+      setStatus('', '');
+      setMessage('', '');
+      clearStudentInfo();
+      toggleExtraFields(false);
+    });
+
+    hasSecondAlternativeEmailInput.addEventListener('change', () => {
+      const visible = hasSecondAlternativeEmailInput.checked;
+      secondEmailWrap.hidden = !visible;
+      alternativeEmail2Input.required = visible;
+      if (!visible) {
+        alternativeEmail2Input.value = '';
+      }
+    });
+
+    differentGroupInput.addEventListener('change', () => {
+      const visible = differentGroupInput.checked;
+      groupSelectWrap.hidden = !visible;
+      reasonWrap.hidden = !visible;
+      attendanceGroupInput.required = visible;
+      attendanceReasonSelect.required = visible;
+      if (!visible) {
+        attendanceGroupInput.value = '';
+        attendanceReasonSelect.value = '';
+        groupOptions.hidden = true;
+      }
+    });
+
+    attendanceGroupInput.addEventListener('focus', () => {
+      renderGroupOptions(attendanceGroupInput.value);
+    });
+
+    attendanceGroupInput.addEventListener('input', () => {
+      renderGroupOptions(attendanceGroupInput.value);
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!groupSelectWrap.contains(event.target)) {
+        groupOptions.hidden = true;
+      }
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const email = emailInput.value.trim();
+      const nickname = nicknameInput.value.trim();
+      const alternativeEmail = alternativeEmailInput.value.trim();
+      const alternativeEmail2 = hasSecondAlternativeEmailInput.checked ? alternativeEmail2Input.value.trim() : '';
+      const attendanceGroup = differentGroupInput.checked ? attendanceGroupInput.value.trim() : '';
+      const attendanceReason = differentGroupInput.checked ? attendanceReasonSelect.value.trim() : '';
+      const csrfToken = csrfTokenInput ? csrfTokenInput.value : '';
+      setMessage('', '');
+      clearStudentInfo();
+
+      if (!isValidAptemEmail(email)) {
+        setStatus('\u2717', 'error');
+        setMessage('Please enter your Aptem email', 'error');
+        return;
+      }
+
+      if (!extraFields.hidden) {
+        if (!nickname) {
+          setStatus('\u2717', 'error');
+          setMessage('Please enter your nickname.', 'error');
+          return;
+        }
+        if (!isValidAptemEmail(alternativeEmail)) {
+          setStatus('\u2717', 'error');
+          setMessage('Please enter the alternative email address you use.', 'error');
+          return;
+        }
+        if (hasSecondAlternativeEmailInput.checked && !isValidAptemEmail(alternativeEmail2)) {
+          setStatus('\u2717', 'error');
+          setMessage('Please enter your second alternative email.', 'error');
+          return;
+        }
+        if (alternativeEmail2 && alternativeEmail2 === alternativeEmail) {
+          setStatus('\u2717', 'error');
+          setMessage('Please enter a different second alternative email.', 'error');
+          return;
+        }
+        if (differentGroupInput.checked && !attendanceGroup) {
+          setStatus('\u2717', 'error');
+          setMessage('Please choose the group you attend.', 'error');
+          return;
+        }
+        if (differentGroupInput.checked && !attendanceReason) {
+          setStatus('\u2717', 'error');
+          setMessage('Please choose the reason.', 'error');
+          return;
+        }
+      }
+
+      submitBtn.disabled = true;
+
+      try {
+        const response = await fetch('/api/auth/student-login/', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+          },
+          body: JSON.stringify({
+            email,
+            nickname,
+            alternative_email: alternativeEmail,
+            alternative_email_2: alternativeEmail2,
+            attendance_group: attendanceGroup,
+            attendance_reason: attendanceReason
+          })
+        });
+
+        const contentType = response.headers.get('content-type') || '';
+        const data = contentType.includes('application/json')
+          ? await response.json()
+          : { detail: response.ok ? 'Done.' : 'Server error. Please try again.' };
+
+        if (response.ok && data.ok) {
+          setStatus('', '');
+          setMessage(data.message || 'Your details have been saved successfully.', 'ok');
+          showStudentInfo(data.group || '');
+          groupOptions.hidden = true;
+          return;
+        }
+
+        if (data.requires_additional_details) {
+          setStatus('', '');
+          toggleExtraFields(true);
+          showStudentInfo(data.group || '');
+          setGroupOptions(data.group_options || []);
+          setMessage('', '');
+          return;
+        }
+        setStatus('\u2717', 'error');
+        if (response.status === 403 && typeof data.detail === 'string' && data.detail.includes('CSRF verification failed')) {
+          setMessage('Security token expired. Please refresh the page and try again.', 'error');
+          return;
+        }
+        if (response.status >= 500) {
+          setMessage('Server error. Please try again in a moment.', 'error');
+          return;
+        }
+        setMessage(data.detail || 'Please enter your Aptem email', 'error');
+      } catch (error) {
+        setStatus('\u2717', 'error');
+        setMessage('Cannot reach backend. Open this page from Django server: http://127.0.0.1:8000/', 'error');
+      } finally {
+        submitBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+
+</html>
