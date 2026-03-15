@@ -154,6 +154,13 @@ def favicon(request):
     raise Http404('Icon not found')
 
 
+def brand_logo(request):
+    logo_path = Path(settings.BASE_DIR) / 'templates' / 'Kent-Business-College-e1768393206822.webp'
+    if logo_path.exists():
+        return FileResponse(open(logo_path, 'rb'), content_type='image/webp')
+    raise Http404('Logo not found')
+
+
 def healthz(request):
     return JsonResponse({'status': 'ok'})
 
@@ -190,6 +197,7 @@ def student_login(request):
             schema_name,
             table_name,
             settings.KBC_EMAIL_COLUMN,
+            fallbacks=['Email', 'email'],
             required=True,
         )
         id_col, _ = _resolve_column(
@@ -203,14 +211,14 @@ def student_login(request):
             schema_name,
             table_name,
             getattr(settings, 'KBC_NAME_COLUMN', 'FullName'),
-            fallbacks=['FullName', 'FirstName'],
+            fallbacks=['FullName', 'fullname', 'full_name', 'FirstName', 'first_name'],
             required=False,
         )
         group_col, _ = _resolve_column(
             schema_name,
             table_name,
             getattr(settings, 'KBC_GROUP_COLUMN', 'Group'),
-            fallbacks=['Group', 'Program Name'],
+            fallbacks=['Group', 'group', 'Program Name', 'program_name', 'last_group'],
             required=False,
         )
     except ValueError:
@@ -251,7 +259,7 @@ def student_login(request):
                 'group': current_group,
                 'group_options': group_options,
             },
-            status=400,
+            status=200,
         )
     if alternative_email_2 and alternative_email_2 == alternative_email:
         return JsonResponse({'detail': 'Please enter a different second alternative email.'}, status=400)
@@ -281,7 +289,6 @@ def student_login(request):
         'aptem_email': email,
         'nickname': nickname,
         'alternative_email': combined_alternative_email,
-        'alternative_email_2': '',
     }
 
     AlternativeEmail.objects.update_or_create(

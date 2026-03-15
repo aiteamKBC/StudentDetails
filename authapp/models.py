@@ -23,13 +23,12 @@ class AttendanceQR(models.Model):
 class AlternativeEmail(models.Model):
     student_id = models.BigIntegerField(primary_key=True, db_column='ID')
     aptem_name = models.CharField(max_length=255, blank=True, default='', db_column='FullName')
-    group = models.CharField(max_length=255, blank=True, default='')
-    attendance_group = models.CharField(max_length=255, blank=True, default='', db_column='other_group')
-    attendance_reason = models.TextField(blank=True, default='', db_column='other_group_reason')
+    group = models.CharField(max_length=255, blank=True, default='', db_column='aptem_module')
+    attendance_group = models.CharField(max_length=255, blank=True, default='', db_column='current_group')
+    attendance_reason = models.TextField(blank=True, default='', db_column='current_module_reason')
     aptem_email = models.EmailField(max_length=255, db_column='Email')
     nickname = models.CharField(max_length=255)
     alternative_email = models.EmailField(max_length=255)
-    alternative_email_2 = models.EmailField(max_length=255, blank=True, default='', db_column='alternative_email_2')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
