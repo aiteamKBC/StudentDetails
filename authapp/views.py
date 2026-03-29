@@ -289,6 +289,7 @@ def student_login(request):
         'aptem_email': email,
         'nickname': nickname,
         'alternative_email': combined_alternative_email,
+        'source': 'UI',
     }
 
     AlternativeEmail.objects.update_or_create(

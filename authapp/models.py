@@ -29,6 +29,7 @@ class AlternativeEmail(models.Model):
     aptem_email = models.EmailField(max_length=255, db_column='Email')
     nickname = models.CharField(max_length=255)
     alternative_email = models.EmailField(max_length=255)
+    source = models.CharField(max_length=50, blank=True, default='', db_column='source')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
